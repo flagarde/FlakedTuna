@@ -1,209 +1,190 @@
-#include <algorithm>
 #include "PlatformDefs.hpp"
+
+#include <algorithm>
+
+#if defined(_WIN32) || defined(WIN32)
+#else
+#include <dirent.h>
+#include <dlfcn.h>
+#endif
 
 namespace FlakedTuna
 {
+  #if defined(_WIN32) || defined(WIN32)
+  /*******************************************************
+   * Win32 platform specific
+   *******************************************************/
 
-#if defined(_WIN32) || defined(WIN32)
-/*******************************************************
-* Win32 platform specific
-*******************************************************/
+  std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>> GetPluginHandles(std::string directory, std::string extension)
+  {
+    std::vector<PLUG_HANDLE> plugHandles;
+    registryVector           regPointers;
 
-	std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>> GetPluginHandles(std::string directory, std::string extension)
-	{
-		std::vector<PLUG_HANDLE> plugHandles;
-		registryVector regPointers;
+    LPWIN32_FIND_DATAA findData = new WIN32_FIND_DATAA;
+    BOOL               f_ok     = TRUE;
 
-		LPWIN32_FIND_DATAA findData = new WIN32_FIND_DATAA;
-		BOOL f_ok = TRUE;
+    if(directory.size() == 0) { directory.append("."); }
 
-		if (directory.size() == 0)
-		{
-			directory.append(".");
-		}
+    if(directory.substr(directory.length() - 1, 1) != "\\") { directory.append("\\"); }
+    std::string search(directory);
+    search.append("*");
+    search.append(extension);
 
-		if (directory.substr(directory.length() - 1, 1) != "\\")
-		{
-			directory.append("\\");
-		}
-		std::string search(directory);
-		search.append("*");
-		search.append(extension);
+    HANDLE findHandle = FindFirstFileA(search.c_str(), findData);
 
-		HANDLE findHandle = FindFirstFileA(search.c_str(), findData);
+    while((findHandle != INVALID_HANDLE_VALUE) && (f_ok == TRUE))
+    {
+      std::string plugPath(directory);
+      plugPath.append(findData->cFileName);
 
-		while ((findHandle != INVALID_HANDLE_VALUE) && (f_ok == TRUE))
-		{
-			std::string plugPath(directory);
-			plugPath.append(findData->cFileName);
+      PLUG_HANDLE handle = LoadLibraryA(plugPath.c_str());
+      if(handle != nullptr)
+      {
+        // Look for plugin registry in file
+        RegFuncPtr PluginRegistryAddr = (RegFuncPtr)GetProcAddress(handle, "GetPluginRegistry");
 
-			PLUG_HANDLE handle = LoadLibraryA(plugPath.c_str());
-			if (handle != NULL)
-			{
-				// Look for plugin registry in file
-				RegFuncPtr PluginRegistryAddr = (RegFuncPtr) GetProcAddress(handle, "GetPluginRegistry");
+        // Check if valid plugin
+        if(PluginRegistryAddr != nullptr)
+        {
+          // Now get the plugin
+          PluginRegistry* pluginRegistry = PluginRegistryAddr();
 
-				// Check if valid plugin
-				if (PluginRegistryAddr != NULL)
-				{
-					// Now get the plugin
-					PluginRegistry* pluginRegistry = PluginRegistryAddr();
+          int            pluginVersion{0};
+          VersionFuncPtr PluginFileVersion = (VersionFuncPtr)GetProcAddress(handle, "GetPluginVersion");
+          if(PluginFileVersion != nullptr) { pluginVersion = PluginFileVersion(); }
 
-					int pluginVersion = 0;
-					VersionFuncPtr PluginFileVersion = (VersionFuncPtr) GetProcAddress(handle, "GetPluginVersion");
-					if (PluginFileVersion != NULL)
-					{
-						pluginVersion = PluginFileVersion();
-					}
+          // Save library/registry
+          plugHandles.push_back(handle);
+          regPointers.push_back(std::make_pair(pluginVersion, pluginRegistry));
+        }
+        else
+        {
+          FreeLibrary(handle);
+        }
+      }
 
-					// Save library/registry
-					plugHandles.push_back(handle);
-					regPointers.push_back(std::make_pair(pluginVersion, pluginRegistry));
-				}
-				else
-				{
-					FreeLibrary(handle);
-				}
-			}
+      // Grab next file handle
+      f_ok = FindNextFileA(findHandle, findData);
+    }
 
-			// Grab next file handle
-			f_ok = FindNextFileA(findHandle, findData);
-		}
+    delete findData;
+    return std::make_pair(plugHandles, regPointers);
+  }
 
-		delete findData;
-		return std::make_pair(plugHandles, regPointers);
-	}
+  void ClosePluginHandles(std::vector<PLUG_HANDLE> handles)
+  {
+    for(auto iter: handles)
+    {
+      CloseFuncPtr closeRegistry = (CloseFuncPtr)GetProcAddress(iter, "ClosePluginRegistry");
+      if(closeRegistry != nullptr) { closeRegistry(); }
+      FreeLibrary(iter);
+    }
+  }
 
-	void ClosePluginHandles(std::vector<PLUG_HANDLE> handles)
-	{
-		for (auto iter : handles)
-		{
-			CloseFuncPtr closeRegistry = (CloseFuncPtr) GetProcAddress(iter, "ClosePluginRegistry");
-			if (closeRegistry != NULL)
-			{
-				closeRegistry();
-			}
-			FreeLibrary(iter);
-		}
-	}
+  #else
+  /*******************************************************
+   * *NIX platform specific
+   *******************************************************/
 
+  std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>> GetPluginHandles(std::string directory, std::string extension)
+  {
+    std::vector<PLUG_HANDLE> plugHandles;
+    registryVector           regPointers;
 
-#else
-/*******************************************************
-* *NIX platform specific
-*******************************************************/
+    DIR*           dirHandle{nullptr};
+    struct dirent* fileInfo{nullptr};
 
-	std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>> GetPluginHandles(std::string directory, std::string extension)
-	{
-		std::vector<PLUG_HANDLE> plugHandles;
-		registryVector regPointers;
+    if(extension.find_last_of(".") == std::string::npos)
+    {
+      // Force extension to have a leading dot for easier checking later
+      extension.insert(0, ".");
+    }
 
-		DIR* dirHandle;
-		struct dirent* fileInfo;
+    if(directory.size() == 0)
+    {
+      // If directory is an empty string, look in current directory
+      directory.append(".");
+    }
 
-		if (extension.find_last_of(".") == std::string::npos)
-		{
-			// Force extension to have a leading dot for easier checking later
-			extension.insert(0, ".");
-		}
+    if(directory.substr(directory.length() - 1, 1) != "/") { directory.append("/"); }
 
-		if (directory.size() == 0)
-		{
-			// If directory is an empty string, look in current directory
-			directory.append(".");
-		}
+    dirHandle = opendir(directory.c_str());
 
-		if (directory.substr(directory.length() - 1, 1) != "/")
-		{
-			directory.append("/");
-		}
+    while((dirHandle != nullptr) && (fileInfo = readdir(dirHandle)) != nullptr)
+    {
+      std::string plugPath(directory);
+      plugPath.append(fileInfo->d_name);
 
-		dirHandle = opendir(directory.c_str());
+      size_t startOfExtension = plugPath.find_last_of('.');
+      if(startOfExtension == std::string::npos)
+      {
+        // No extension separator, assume this is not a file we are looking for
+        continue;
+      }
+      std::string fileExt = plugPath.substr(startOfExtension, plugPath.length() - startOfExtension);
+      if(fileExt != extension)
+      {
+        // Wrong file extension, ignore this also
+        continue;
+      }
 
-		while ((dirHandle != NULL) && (fileInfo = readdir(dirHandle)) != NULL)
-		{
-			std::string plugPath(directory);
-			plugPath.append(fileInfo->d_name);
+      PLUG_HANDLE handle = dlopen(plugPath.c_str(), RTLD_LAZY);
+      if(handle != nullptr)
+      {
+        // Clear the error flag
+        dlerror();
 
-			size_t startOfExtension = plugPath.find_last_of('.');
-			if (startOfExtension == std::string::npos)
-			{
-				// No extension separator, assume this is not a file we are looking for
-				continue;
-			}
-			std::string fileExt = plugPath.substr(startOfExtension, plugPath.length() - startOfExtension);
-			if (fileExt != extension)
-			{
-				// Wrong file extension, ignore this also
-				continue;
-			}
+        // Look for plugin registry in file
+        RegFuncPtr PluginRegistryAddr = (RegFuncPtr)dlsym(handle, "GetPluginRegistry");
 
-			PLUG_HANDLE handle = dlopen(plugPath.c_str(), RTLD_LAZY);
-			if (handle != NULL)
-			{
-				// Clear the error flag
-				dlerror();
+        // Check if valid plugin; NULL means no error
+        char* error = dlerror();
+        if(error == nullptr)
+        {
+          // Now get the plugin
+          PluginRegistry* pluginRegistry = PluginRegistryAddr();
 
-				// Look for plugin registry in file
-				RegFuncPtr PluginRegistryAddr = (RegFuncPtr)dlsym(handle, "GetPluginRegistry");
+          // Clear the error flag again
+          dlerror();
 
-				// Check if valid plugin; NULL means no error
-				char* error = dlerror();
-				if (error == NULL)
-				{
-					// Now get the plugin
-					PluginRegistry* pluginRegistry = PluginRegistryAddr();
+          int            pluginVersion{0};
+          VersionFuncPtr PluginFileVersion = (VersionFuncPtr)dlsym(handle, "GetPluginVersion");
 
-					// Clear the error flag again
-					dlerror();
+          // Check if a version is specified
+          error = dlerror();
+          if(error == NULL) { pluginVersion = PluginFileVersion(); }
 
-					int pluginVersion = 0;
-					VersionFuncPtr PluginFileVersion = (VersionFuncPtr)dlsym(handle, "GetPluginVersion");
+          // Save library/registry
+          plugHandles.push_back(handle);
+          regPointers.push_back(std::make_pair(pluginVersion, pluginRegistry));
+        }
+        else
+        {
+          dlclose(handle);
+        }
+      }
+    }
 
-					// Check if a version is specified
-					error = dlerror();
-					if (error == NULL)
-					{
-						pluginVersion = PluginFileVersion();
-					}
+    if(dirHandle != nullptr) { closedir(dirHandle); }
 
-					// Save library/registry
-					plugHandles.push_back(handle);
-					regPointers.push_back(std::make_pair(pluginVersion, pluginRegistry));
-				}
-				else
-				{
-					dlclose(handle);
-				}
-			}
-		}
+    return std::make_pair(plugHandles, regPointers);
+  }
 
-		if (dirHandle != NULL)
-		{
-			closedir(dirHandle);
-		}
+  void ClosePluginHandles(std::vector<PLUG_HANDLE> handles)
+  {
+    for(auto iter: handles)
+    {
+      // Clear the error flag
+      dlerror();
 
-		return std::make_pair(plugHandles, regPointers);
-	}
+      CloseFuncPtr closeRegistry = (CloseFuncPtr)dlsym(iter, "ClosePluginRegistry");
 
-	void ClosePluginHandles(std::vector<PLUG_HANDLE> handles)
-	{
-		for (auto iter : handles)
-		{
-			// Clear the error flag
-			dlerror();
+      char* error = dlerror();
+      if(error == nullptr) { closeRegistry(); }
+      dlclose(iter);
+    }
+  }
 
-			CloseFuncPtr closeRegistry = (CloseFuncPtr)dlsym(iter, "ClosePluginRegistry");
+  #endif
 
-			char* error = dlerror();
-			if (error == NULL)
-			{
-				closeRegistry();
-			}
-			dlclose(iter);
-		}
-	}
-
-#endif
-
-} // end namespace
+}  // namespace FlakedTuna
