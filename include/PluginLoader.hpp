@@ -18,7 +18,7 @@ private:
 
 public:
   ~PluginLoader();
-
+  PluginLoader();
   bool FindPluginsAtDirectory(std::string additionalDir, std::string extension);
 
   template <class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin( int version = 0 )
