@@ -1,5 +1,4 @@
-#ifndef _PLATFORM_DEFS_H_
-#define _PLATFORM_DEFS_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -44,5 +43,3 @@ namespace FlakedTuna
 	void ClosePluginHandles(std::vector<PLUG_HANDLE> handles);
 
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _PLUGIN_REGISTRY_H_
-#define _PLUGIN_REGISTRY_H_
+#pragma once
 
 #include <exception>
 #include <functional>
@@ -64,5 +63,3 @@ namespace FlakedTuna
 #define FLAKED_TUNA_EXPORTS_END						return pr; } extern "C" FT_EXPORT void ClosePluginRegistry() { if(pr != nullptr) { delete pr; } }
 
 #define FLAKED_TUNA_PLUGIN_VERSION( version )		extern "C" FT_EXPORT int GetPluginVersion() { return version; }
-
-#endif

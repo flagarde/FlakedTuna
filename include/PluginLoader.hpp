@@ -1,5 +1,4 @@
-#ifndef _PLUGIN_LOADER_H_
-#define _PLUGIN_LOADER_H_
+#pragma once
 
 #include <map>
 #include <vector>
@@ -43,5 +42,3 @@ namespace FlakedTuna
 		}
 	};
 }
-
-#endif
