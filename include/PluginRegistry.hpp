@@ -4,34 +4,33 @@
 #include <functional>
 #include <memory>
 #include <typeindex>
-#include <unordered_map>
+#include <map>
 
 // TODO: Look at supporting constructors with parameters
-// TODO: Profile map vs unordered_map
 
 namespace FlakedTuna
 {
   class PluginRegistry
   {
   private:
-    std::unordered_map<std::type_index, std::vector<std::function<std::shared_ptr<void>()>>> _plugins;
+    std::multimap<std::type_index,std::function<std::shared_ptr<void>()>> _plugins;
 
   public:
     template<typename T, typename BaseT, typename... Ts> void RegisterPlugin(Ts... rest)
     {
-      // If key already exists, throw a duplicate plugin exception
-      std::shared_ptr<T> toto{std::make_shared<T>(rest...)};
-      _plugins[std::type_index(typeid(BaseT))].push_back([toto]() { return toto; });
+      _plugins.emplace(std::type_index(typeid(BaseT)), [this,rest...]() { return std::make_shared<T>(rest...); });
     }
 
-    template<class T> std::vector<std::shared_ptr<T>> ResolvePlugin()
+    template <class BaseT> std::vector<std::shared_ptr<BaseT>> ResolvePlugin()
     {
-      std::vector<std::shared_ptr<T>> ret = {nullptr};
-      if(_plugins.find(std::type_index(typeid(T))) != _plugins.end())
+      std::vector<std::shared_ptr<BaseT>> return_plugins;
+      std::pair<std::multimap<std::type_index, std::function<std::shared_ptr<void>()>>::iterator, std::multimap<std::type_index, std::function<std::shared_ptr<void>()>>::iterator> ret ;
+      ret = _plugins.equal_range(std::type_index(typeid(BaseT)));
+      for(std::multimap<std::type_index, std::function<std::shared_ptr<void>()>>::iterator it=ret.first; it!=ret.second; ++it)
       {
-        for(size_t i = 0; i != _plugins[typeid(T)].size(); ++i) ret.push_back(std::static_pointer_cast<T>(_plugins[std::type_index(typeid(T))][i]()));
+        return_plugins.push_back( std::static_pointer_cast<BaseT>( (it->second)() ) );
       }
-      return ret;
+      return return_plugins;
     }
   };
 }  // namespace FlakedTuna
