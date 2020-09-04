@@ -1,1 +1,13 @@
- 
+add_plugin(TARGET DogDescription SOURCES "Dog.cpp" PUBLIC_HEADERS "./Dog.hpp" CHILDS Dog BASE Animal)
+install(TARGETS DogDescription RUNTIME DESTINATION bin LIBRARY DESTINATION bin ARCHIVE DESTINATION bin PUBLIC_HEADER DESTINATION include)
+
+add_plugin(TARGET CatDescription SOURCES "Cat.cpp" PUBLIC_HEADERS "./Cat.hpp" CHILDS Cat BASE Animal)
+install(TARGETS CatDescription RUNTIME DESTINATION bin LIBRARY DESTINATION bin ARCHIVE DESTINATION bin PUBLIC_HEADER DESTINATION include)
+
+add_plugin(TARGET FarmAnimalsDescriptions SOURCES "FarmAnimals.cpp" PUBLIC_HEADERS "./FarmAnimals.hpp" CHILDS Chicken Cow Duck BASE Animal)
+install(TARGETS FarmAnimalsDescriptions RUNTIME DESTINATION bin LIBRARY DESTINATION bin ARCHIVE DESTINATION bin PUBLIC_HEADER DESTINATION include)
+
+add_executable(Example Example.cpp)
+target_link_libraries(Example PRIVATE FlakedTuna)
+install(TARGETS Example RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+
