@@ -24,7 +24,7 @@ function(add_plugin)
   endif()
 
   #target_link_libraries(${PLUGIN_TARGET} PRIVATE FlakedTuna::FlakedTuna)
-  get_property(PLUGINS_INCLUDE TARGET FlakedTuna::FlakedTuna PROPERTY INCLUDE_DIRECTORIES)
+  #get_property(PLUGINS_INCLUDE TARGET FlakedTuna::FlakedTuna PROPERTY INCLUDE_DIRECTORIES)
 
   # Includes
   if(PLUGIN_PUBLIC_HEADERS)
@@ -82,5 +82,5 @@ function(add_plugin)
         FILE_CONTENT @ONLY)
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/generated/plugins/Plugin_${PLUGIN_TARGET}.cpp"  ${FILE_CONTENT})
   target_sources(${PLUGIN_TARGET} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated/plugins/Plugin_${PLUGIN_TARGET}.cpp")
-  target_include_directories(${PLUGIN_TARGET} PRIVATE ${PLUGINS_INCLUDE})
+  #target_include_directories(${PLUGIN_TARGET} PRIVATE ${PLUGINS_INCLUDE})
 endfunction()
