@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/FlakedTuna.cmake")
+
+set_and_check(FLAKEDTUNA_INCLUDE_DIR "@PACKAGE_PUBLIC_INCLUDE_INSTALL_DIR@")
+target_include_directories(FlakedTuna::FlakedTuna INTERFACE "${FLAKEDTUNA_INCLUDE_DIR}")
+
+check_required_components(FlakedTuna)
