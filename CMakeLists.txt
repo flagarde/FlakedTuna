@@ -4,6 +4,8 @@ project(FlakedTuna VERSION "0.9.5" DESCRIPTION "A lightweight, cross-platform C+
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+include(CreatePlugins)
+
 option(BUILD_TESTS "Compile the tests" ON)
 option(BUILD_EXAMPLES "Compile the examples" ON)
 

@@ -26,17 +26,16 @@ namespace FlakedTuna
 		{
 			std::vector<std::shared_ptr<BaseT>> concretePlugins;
 
-			for (auto registryIter : _registries)
-			{
-				if (registryIter.first < version)	continue; // Earlier versions may not be forward compatible, so ignore
+      for(auto registryIter : _registries)
+      {
+        if(registryIter.first < version) continue;
 
-				std::shared_ptr<BaseT> concretePlugin = registryIter.second->ResolvePlugin<BaseT>();
-				if (concretePlugin.get() != nullptr)
-				{
-					// It has this base type registered
-					concretePlugins.push_back(concretePlugin);
-				}
-			}
+        std::vector<std::shared_ptr<BaseT>> concretePlugin = registryIter.second->ResolvePlugins<BaseT>();
+        for(std::size_t i=0;i!= concretePlugin.size();++i)
+        {
+          if (concretePlugin[i].get() != nullptr) concretePlugins.push_back(concretePlugin[i]);
+        }
+      }
 
 			return concretePlugins;
 		}
