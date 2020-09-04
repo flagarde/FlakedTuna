@@ -55,9 +55,32 @@ function(add_plugin)
       "static_assert(std::is_base_of<${PLUGIN_BASE},${CHILD}>::value, \"ERROR: FLAKED_TUNA_PLUGIN: Registered ${CHILD} must be of base type ${PLUGIN_BASE}.\");\nstatic_assert((std::is_default_constructible<${CHILD}>::value), \"ERROR: FLAKED_TUNA_PLUGIN: ${CHILD} type is not default constructable.\");\npr->RegisterPlugin<${CHILD},${PLUGIN_BASE}>()"
       )
   endforeach()
-  string(REPLACE ";" ";\n" PLUGIN_REGISTERS "${PLUGIN_REGISTERS}")
-  list(APPEND PLUGIN_REGISTERS "")
-  configure_file("${CMAKE_SOURCE_DIR}/cmake/PluginProto.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/generated/plugins/Plugin_${PLUGIN_TARGET}.cpp" @ONLY)
+  string(REPLACE ";" "\;\n" PLUGIN_REGISTERS "${PLUGIN_REGISTERS}")
+  list(APPEND PLUGIN_REGISTERS "\;")
+
+  string(CONFIGURE
+        "#include \"PluginRegistry.hpp\"
+        \n
+        @PLUGIN_INCLUDES@
+        \n
+        FlakedTuna::PluginRegistry* pr{nullptr}\;
+        \n
+        extern \"C\" @PLUGIN_EXPORT@ FlakedTuna::PluginRegistry* GetPluginRegistry()
+        {
+          pr = new FlakedTuna::PluginRegistry()\;\n
+          @PLUGIN_REGISTERS@ \n
+          return pr\;
+        }
+        \n
+        extern \"C\" @PLUGIN_EXPORT@ void ClosePluginRegistry()
+        {
+          if(pr != nullptr) { delete pr\; }
+        }
+        \n
+        extern \"C\" @PLUGIN_EXPORT@ int GetPluginVersion(){return @PLUGIN_VERSION@\;}
+        "
+        FILE_CONTENT @ONLY)
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/generated/plugins/Plugin_${PLUGIN_TARGET}.cpp"  ${FILE_CONTENT})
   target_sources(${PLUGIN_TARGET} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated/plugins/Plugin_${PLUGIN_TARGET}.cpp")
   target_include_directories(${PLUGIN_TARGET} PRIVATE ${PLUGINS_INCLUDE})
 endfunction()
