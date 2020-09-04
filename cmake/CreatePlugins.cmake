@@ -23,7 +23,9 @@ function(add_plugin)
     add_library(${PLUGIN_TARGET} MODULE ${PLUGIN_SOURCES})
   endif()
 
-  get_property(PLUGINS_INCLUDE TARGET FlakedTuna::FlakedTuna PROPERTY INCLUDE_DIRECTORIES)
+  if(TARGET FlakedTuna::FlakedTuna)
+    get_property(PLUGINS_INCLUDE TARGET FlakedTuna::FlakedTuna PROPERTY INCLUDE_DIRECTORIES)
+  endif()
 
   # Includes
   if(PLUGIN_PUBLIC_HEADERS)
