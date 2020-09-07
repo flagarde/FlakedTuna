@@ -1,5 +1,5 @@
 function(add_plugin)
-  cmake_parse_arguments(PLUGIN "EXCLUDE_FROM_ALL" "TARGET;BASE;VERSION" "SOURCES;PUBLIC_HEADERS;CHILDS" ${ARGN})
+  cmake_parse_arguments(PLUGIN "EXCLUDE_FROM_ALL" "TARGET;VERSION;BASE" "CHILDS;SOURCES;PUBLIC_HEADERS" ${ARGN})
 
   if(NOT PLUGIN_TARGET)
     message(FATAL_ERROR "The target name for the plugin to create must be given.")
@@ -24,7 +24,8 @@ function(add_plugin)
   endif()
 
   if(TARGET FlakedTuna::FlakedTuna)
-    get_property(PLUGINS_INCLUDE TARGET FlakedTuna::FlakedTuna PROPERTY INCLUDE_DIRECTORIES)
+    get_target_property(INCLUDE_DIR FlakedTuna::FlakedTuna INCLUDE_DIRECTORIES)
+    target_include_directories(${PLUGIN_TARGET} PRIVATE ${INCLUDE_DIR})
   endif()
 
   # Includes
@@ -60,28 +61,26 @@ function(add_plugin)
   list(APPEND PLUGIN_REGISTERS "\;")
 
   string(CONFIGURE
-        "#include \"PluginRegistry.hpp\"
-        \n
-        @PLUGIN_INCLUDES@
-        \n
-        FlakedTuna::PluginRegistry* pr{nullptr}\;
-        \n
-        extern \"C\" @PLUGIN_EXPORT@ FlakedTuna::PluginRegistry* GetPluginRegistry()
-        {
-          pr = new FlakedTuna::PluginRegistry()\;\n
-          @PLUGIN_REGISTERS@ \n
-          return pr\;
-        }
-        \n
-        extern \"C\" @PLUGIN_EXPORT@ void ClosePluginRegistry()
-        {
-          if(pr != nullptr) { delete pr\; }
-        }
-        \n
-        extern \"C\" @PLUGIN_EXPORT@ int GetPluginVersion(){return @PLUGIN_VERSION@\;}
-        "
-        FILE_CONTENT @ONLY)
+  "#include \"PluginRegistry.hpp\"
+   @PLUGIN_INCLUDES@
+   FlakedTuna::PluginRegistry* pr{nullptr}\;
+   extern \"C\" @PLUGIN_EXPORT@ FlakedTuna::PluginRegistry* GetPluginRegistry()
+   {
+     pr = new FlakedTuna::PluginRegistry()\;
+     @PLUGIN_REGISTERS@
+     return pr\;
+   }
+   \n
+   extern \"C\" @PLUGIN_EXPORT@ void ClosePluginRegistry()\n
+   {
+   if(pr != nullptr) { delete pr\; }
+   }
+   \n
+   extern \"C\" @PLUGIN_EXPORT@ const int GetPluginVersion()
+   {
+   return @PLUGIN_VERSION@\;
+   }"
+   FILE_CONTENT @ONLY)
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/generated/plugins/Plugin_${PLUGIN_TARGET}.cpp"  ${FILE_CONTENT})
   target_sources(${PLUGIN_TARGET} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated/plugins/Plugin_${PLUGIN_TARGET}.cpp")
-  target_include_directories(${PLUGIN_TARGET} PRIVATE ${PLUGINS_INCLUDE})
 endfunction()
