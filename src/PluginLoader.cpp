@@ -1,7 +1,5 @@
 #include "PluginLoader.hpp"
 
-#include <tuple>
-
 namespace FlakedTuna
 {
   PluginLoader::~PluginLoader()
@@ -9,37 +7,58 @@ namespace FlakedTuna
     ClosePluginLibraries();
   }
 
-  PluginLoader::PluginLoader()
-  {
-    m_Suffix = suffix();
-  }
-
-  std::string PluginLoader::suffix()
-  {
-    return ".so";
-  }
-
   void PluginLoader::ClosePluginLibraries()
   {
-    ClosePluginHandles(_libraries);
-    _libraries.clear();
-    _registries.clear();
+    ClosePluginHandles(m_Libraries);
+    m_Libraries.clear();
   }
 
   // Return: true  - Success
   //         false - Invalid directory path
-  bool PluginLoader::FindPluginsAtDirectory(std::string additionalDir, std::string extension)
+  bool PluginLoader::FindPluginsAtDirectory(const n_fs::path& path,const std::string& extension)
   {
-    if(extension == "") extension = m_Suffix;
-    std::vector<PLUG_HANDLE> newLibs;
-    registryVector           newRegs;
 
-    std::tie(newLibs, newRegs) = GetPluginHandles(additionalDir, extension);
+    std::vector<PluginHandler> newLibs = GetPluginHandles(path, extension);
 
-    if(newLibs.size() == 0)  // newLibs and newRegs are same size, so only check one
-    { return false; }
-    _libraries.insert(_libraries.end(), newLibs.begin(), newLibs.end());
-    _registries.insert(_registries.end(), newRegs.begin(), newRegs.end());
+    if(newLibs.size() == 0) // newLibs and newRegs are same size, so only check one
+    {
+      return false;
+    }
+    m_Libraries.insert(m_Libraries.end(), newLibs.begin(), newLibs.end());
     return true;
   }
-}  // namespace FlakedTuna
+
+  void PluginLoader::ClosePluginHandles(std::vector<PluginHandler>& handles)
+  {
+    for(auto handle : handles)
+    {
+      handle.close();
+    }
+  }
+
+  std::vector<PluginHandler> PluginLoader::GetPluginHandles(const n_fs::path& path,const std::string& extension)
+  {
+    std::vector<PluginHandler> plugHandles;
+    std::string pextension=extension;
+    // Force extension to have a leading dot for easier checking later
+    if(pextension.find_last_of(".") == std::string::npos)
+    {
+      pextension.insert(0, ".");
+    }
+    // Iterate over the elements inside the directory
+    for(auto& p: n_fs::recursive_directory_iterator(path))
+    {
+      if(p.path().extension()==pextension)
+      {
+        PluginHandler handler;
+        if(handler.open(p.path().string()))
+        {
+          handler.load();
+          plugHandles.push_back(handler);
+        }
+      }
+    }
+    return plugHandles;
+  }
+
+}

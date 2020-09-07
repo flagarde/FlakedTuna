@@ -1,10 +1,15 @@
 set(INCLUDES "${CMAKE_SOURCE_DIR}/include")
 
 set(PUBLIC_INCLUDE_INSTALL_DIR "include")
-
-add_library(FlakedTuna "PlatformDefs.cpp" "PluginLoader.cpp")
+if(WIN32)
+  add_library(FlakedTuna "PluginHandlerWindows.cpp" "PluginLoader.cpp")
+elseif(UNIX)
+  add_library(FlakedTuna "PluginHandlerUNIX.cpp" "PluginLoader.cpp")
+else()
+  message(FATAL_ERROR "FlakedTuna is only available for UNIX and Windows systems")
+endif()
 target_include_directories(FlakedTuna PUBLIC $<BUILD_INTERFACE:${INCLUDES}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-set_target_properties(FlakedTuna PROPERTIES PUBLIC_HEADER "${INCLUDES}/PluginLoader.hpp;${INCLUDES}/PluginRegistry.hpp;${INCLUDES}/PlatformDefs.hpp")
+set_target_properties(FlakedTuna PROPERTIES PUBLIC_HEADER "${INCLUDES}/PluginLoader.hpp;${INCLUDES}/PluginRegistry.hpp;${INCLUDES}/PluginHandler.hpp")
 target_link_libraries(FlakedTuna INTERFACE ${CMAKE_DL_LIBS})
 set_property(TARGET FlakedTuna PROPERTY POSITION_INDEPENDENT_CODE ON)
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
