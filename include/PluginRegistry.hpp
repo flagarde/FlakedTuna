@@ -13,12 +13,11 @@ namespace FlakedTuna
   class PluginRegistry
   {
 
-
   private:
     std::multimap<std::type_index,std::function<std::shared_ptr<void>()>> _plugins;
 
   public:
-    template<typename T, typename BaseT, typename... Ts> void RegisterPlugin()
+    template<typename T, typename BaseT> void RegisterPlugin()
     {
       _plugins.emplace(std::type_index(typeid(BaseT)), [this]() { return std::make_shared<T>(); });
     }
