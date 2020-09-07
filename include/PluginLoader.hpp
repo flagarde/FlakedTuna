@@ -1,51 +1,51 @@
 #pragma once
 
+#include "PlatformDefs.hpp"
 #include "PluginRegistry.hpp"
-#include "PluginHandler.hpp"
 
+#include <map>
 #include <string>
 #include <vector>
 
-#ifdef LEGACY_CXX
-  #include <experimental/filesystem>
-  namespace n_fs = ::std::experimental::filesystem;
-#else
-  #include <filesystem>
-  namespace n_fs = ::std::filesystem;
-#endif
-
 namespace FlakedTuna
 {
-
   class PluginLoader
   {
   private:
-    std::vector<PluginHandler> m_Libraries;
-    std::vector<PluginHandler> GetPluginHandles(const n_fs::path& path,const std::string& extension);
+    std::vector<PLUG_HANDLE> _libraries;
+    registryVector           _registries;
+
+    void ClosePluginLibraries();
+
     std::string suffix();
     std::string m_Suffix{""};
-    void ClosePluginHandles(std::vector<PluginHandler>& handles);
-  public:
-    ~PluginLoader();
-    void ClosePluginLibraries();
-    bool FindPluginsAtDirectory(const n_fs::path& path,const std::string& extension);
 
-    template <class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin(const int& version=0)
+  public:
+    PluginLoader();
+    ~PluginLoader();
+
+    bool FindPluginsAtDirectory(std::string additionalDir, std::string extension = "");
+
+    template<class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin(const int& version = 0)
     {
       std::vector<std::shared_ptr<BaseT>> concretePlugins;
 
-      for(auto registryIter : m_Libraries)
+      for(auto registryIter: _registries)
       {
-        if(registryIter.getVersion() < version) continue;
+        if(registryIter.first < version) continue;  // Earlier versions may not be forward compatible, so ignore
 
-        std::vector<std::shared_ptr<BaseT>> concretePlugin = registryIter.getRegistry()->ResolvePlugin<BaseT>();
-        for(std::size_t i=0;i!= concretePlugin.size();++i)
+        std::vector<std::shared_ptr<BaseT>> concretePlugin = registryIter.second->ResolvePlugin<BaseT>();
+        for(size_t i = 0; i != concretePlugin.size(); ++i)
         {
-          if (concretePlugin[i].get() != nullptr) concretePlugins.push_back(concretePlugin[i]);
+          if(concretePlugin[i].get() != nullptr)
+          {
+            // It has this base type registered
+            concretePlugins.push_back(concretePlugin[i]);
+          }
         }
       }
+
       return concretePlugins;
     }
   };
-
-}
+}  // namespace FlakedTuna
