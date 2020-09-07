@@ -17,8 +17,9 @@ namespace FlakedTuna
   //         false - Invalid directory path
   bool PluginLoader::FindPluginsAtDirectory(const n_fs::path& path,const std::string& extension)
   {
-
-    std::vector<PluginHandler> newLibs = GetPluginHandles(path, extension);
+    std::vector<PluginHandler> newLibs;
+    if(extension=="") newLibs = GetPluginHandles(path,m_Extension);
+    else newLibs = GetPluginHandles(path,extension);
 
     if(newLibs.size() == 0) // newLibs and newRegs are same size, so only check one
     {

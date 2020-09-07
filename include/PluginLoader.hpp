@@ -22,13 +22,18 @@ namespace FlakedTuna
   private:
     std::vector<PluginHandler> m_Libraries;
     std::vector<PluginHandler> GetPluginHandles(const n_fs::path& path,const std::string& extension);
-    std::string suffix();
-    std::string m_Suffix{""};
+  #if defined(_WIN32) || defined(WIN32)
+    std::string m_Extension{".dll"};
+  #else
+    std::string m_Extension{".so"};
+  #endif
+
     void ClosePluginHandles(std::vector<PluginHandler>& handles);
   public:
+    PluginLoader()=default;
     ~PluginLoader();
     void ClosePluginLibraries();
-    bool FindPluginsAtDirectory(const n_fs::path& path,const std::string& extension);
+    bool FindPluginsAtDirectory(const n_fs::path& path,const std::string& extension="");
 
     template <class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin(const int& version=0)
     {
