@@ -6,7 +6,11 @@
 int main(int argc, char** argv)
 {
   FlakedTuna::PluginLoader loader;
-  loader.FindPluginsAtDirectory(".");
+#if defined(WIN32) || defined(_WIN32)
+  loader.FindPluginsAtDirectory(".", "dll");
+#else
+  loader.FindPluginsAtDirectory(".", "so");
+#endif
 
   std::vector<std::shared_ptr<Animal>> plugins = loader.BuildAndResolvePlugin<Animal>();
 
