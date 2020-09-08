@@ -1,4 +1,17 @@
-# A quick guide for Flaked Tuna #
+# Flaked Tuna ![GitHub](https://img.shields.io/github/license/flagarde/FlakedTuna) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/flagarde/FlakedTuna) ![GitHub repo size](https://img.shields.io/github/repo-size/flagarde/FlakedTuna) #
+
+A lightweight, cross-platform C++17 Plugin Framework.
+
+## Builds ##
+|                   | Linux clang       | Linux gcc         | macOS clang       | Windows MSVC      | Windows MinGW     |
+|:-----------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|
+|Github             |![1]               |![2]               |![3]               |![4]               |![5]               |
+
+[1]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/Linux%20Clang
+[2]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/Linux%20GCC
+[3]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/macOS
+[4]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/Windows%20MSVC
+[5]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/Windows%20MinGW
 
 ## Where does one get Flaked Tuna? ##
 Flaked Tuna is free and open source software distributed under the MIT software license.  Currently it is located on GitHub and presumably you already know the link if you are reading this document.  If not, you can download it at: github.com/ralck/flakedTuna
