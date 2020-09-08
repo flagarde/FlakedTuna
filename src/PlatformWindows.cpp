@@ -18,7 +18,7 @@ namespace FlakedTuna
       if(p.path().extension()==pextension)
       {
 
-        PLUG_HANDLE handle = LoadLibraryA(p.path().c_str());
+        PLUG_HANDLE handle = LoadLibraryA(p.path().string().c_str());
         if(handle != nullptr)
         {
           // Look for plugin registry in file

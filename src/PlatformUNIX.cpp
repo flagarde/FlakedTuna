@@ -20,7 +20,7 @@ namespace FlakedTuna
     {
       if(p.path().extension()==pextension)
       {
-        PLUG_HANDLE handle = dlopen(p.path().c_str(), RTLD_LAZY);
+        PLUG_HANDLE handle = dlopen(p.path().string().c_str(), RTLD_LAZY);
           if(handle != nullptr)
           {
             // Clear the error flag
