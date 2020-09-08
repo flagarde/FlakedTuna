@@ -3,40 +3,38 @@
 #include "PluginRegistry.hpp"
 
 #include <string>
-#include <tuple>
 #include <vector>
+
+#ifdef LEGACY_CXX
+  #include <experimental/filesystem>
+  namespace n_fs = ::std::experimental::filesystem;
+#else
+  #include <filesystem>
+  namespace n_fs = ::std::filesystem;
+#endif
 
 namespace FlakedTuna
 {
-  /*******************************************************
-   * Win32 platform specific
-   *******************************************************/
+
   #if defined(_WIN32) || defined(WIN32)
   #define WIN32_LEAN_AND_MEAN
   #include <Windows.h>
-
-  typedef HMODULE PLUG_HANDLE;
-
-  /*******************************************************
-   * *NIX platform specific
-   *******************************************************/
+  using PLUG_HANDLE = HMODULE;
   #else
-
-  typedef void* PLUG_HANDLE;
-
+  using PLUG_HANDLE = void*;
   #endif
+
+  using RegFuncPtr = PluginRegistry* (*)();
+  using CloseFuncPtr = void (*)();
+  using VersionFuncPtr = int (*)();
+
 
   /*******************************************************
    * Non-platform specific code
    *******************************************************/
-  typedef std::vector<std::pair<int, PluginRegistry*>> registryVector;
+  using registryVector = std::vector<std::pair<int, PluginRegistry*>>;
 
-  typedef PluginRegistry* (*RegFuncPtr)();
-  typedef void (*CloseFuncPtr)();
-  typedef int (*VersionFuncPtr)();
-
-  std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>> GetPluginHandles(std::string directory, std::string extension);
-
+  std::pair<std::vector<PLUG_HANDLE>, registryVector > GetPluginHandles(const n_fs::path& path,const std::string& extension);
   void ClosePluginHandles(std::vector<PLUG_HANDLE> handles);
 
-}  // namespace FlakedTuna
+}

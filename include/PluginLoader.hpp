@@ -17,14 +17,12 @@ namespace FlakedTuna
 
     void ClosePluginLibraries();
 
-    std::string suffix();
-    std::string m_Suffix{""};
-
+    static const std::string m_DefaultExtension;
   public:
-    PluginLoader();
+
     ~PluginLoader();
 
-    bool FindPluginsAtDirectory(std::string additionalDir, std::string extension = "");
+    bool FindPluginsAtDirectory(const n_fs::path& path=".",const std::string& extension = PluginLoader::m_DefaultExtension);
 
     template<class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin(const int& version = 0)
     {

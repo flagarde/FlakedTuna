@@ -4,19 +4,16 @@
 
 namespace FlakedTuna
 {
+
+  #if defined(_WIN32) || defined(WIN32)
+  const std::string PluginLoader::m_DefaultExtension=".dll";
+  #else
+  const std::string PluginLoader::m_DefaultExtension=".so";
+  #endif
+
   PluginLoader::~PluginLoader()
   {
     ClosePluginLibraries();
-  }
-
-  PluginLoader::PluginLoader()
-  {
-    m_Suffix = suffix();
-  }
-
-  std::string PluginLoader::suffix()
-  {
-    return ".so";
   }
 
   void PluginLoader::ClosePluginLibraries()
@@ -28,13 +25,12 @@ namespace FlakedTuna
 
   // Return: true  - Success
   //         false - Invalid directory path
-  bool PluginLoader::FindPluginsAtDirectory(std::string additionalDir, std::string extension)
+  bool PluginLoader::FindPluginsAtDirectory(const n_fs::path& path,const std::string& extension)
   {
-    if(extension == "") extension = m_Suffix;
     std::vector<PLUG_HANDLE> newLibs;
     registryVector           newRegs;
 
-    std::tie(newLibs, newRegs) = GetPluginHandles(additionalDir, extension);
+    std::tie(newLibs, newRegs) = GetPluginHandles(path, extension);
 
     if(newLibs.size() == 0)  // newLibs and newRegs are same size, so only check one
     { return false; }
