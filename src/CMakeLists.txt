@@ -27,11 +27,11 @@ add_library(FlakedTuna::FlakedTuna ALIAS FlakedTuna)
 
 install(TARGETS FlakedTuna  EXPORT FlakedTuna RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION ${PUBLIC_INCLUDE_INSTALL_DIR})
 
-install(EXPORT FlakedTuna FILE "FlakedTuna.cmake" DESTINATION "lib/cmake/${CMAKE_PROJECT_NAME}" NAMESPACE FlakedTuna::)
+install(EXPORT FlakedTuna FILE "FlakedTuna.cmake" DESTINATION "lib/cmake/${PROJECT-NAME}" NAMESPACE FlakedTuna::)
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${PROJECT-NAME}ConfigVersion.cmake" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
 
-configure_package_config_file("${CMAKE_SOURCE_DIR}/cmake/${CMAKE_PROJECT_NAME}Config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake" INSTALL_DESTINATION "lib/cmake/${CMAKE_PROJECT_NAME}" PATH_VARS PUBLIC_INCLUDE_INSTALL_DIR)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake" "${CMAKE_SOURCE_DIR}/cmake/CreatePlugins.cmake" DESTINATION "lib/cmake/${CMAKE_PROJECT_NAME}")
+configure_package_config_file("${CMAKE_SOURCE_DIR}/cmake/${PROJECT-NAME}Config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT-NAME}Config.cmake" INSTALL_DESTINATION "lib/cmake/${PROJECT-NAME}" PATH_VARS PUBLIC_INCLUDE_INSTALL_DIR)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT-NAME}Config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT-NAME}ConfigVersion.cmake" "${CMAKE_SOURCE_DIR}/cmake/CreatePlugins.cmake" DESTINATION "lib/cmake/${PROJECT-NAME}")
 
 
