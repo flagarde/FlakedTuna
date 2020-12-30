@@ -1,4 +1,4 @@
-set(INCLUDES "${CMAKE_SOURCE_DIR}/include")
+set(INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
 set(PUBLIC_INCLUDE_INSTALL_DIR "include")
 
@@ -31,7 +31,7 @@ install(EXPORT FlakedTuna FILE "FlakedTuna.cmake" DESTINATION "lib/cmake/${PROJE
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
 
-configure_package_config_file("${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" INSTALL_DESTINATION "lib/cmake/${PROJECT_NAME}" PATH_VARS PUBLIC_INCLUDE_INSTALL_DIR)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" "${CMAKE_SOURCE_DIR}/cmake/CreatePlugins.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}")
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/../cmake/${PROJECT_NAME}Config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" INSTALL_DESTINATION "lib/cmake/${PROJECT_NAME}" PATH_VARS PUBLIC_INCLUDE_INSTALL_DIR)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/CreatePlugins.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}")
 
 
