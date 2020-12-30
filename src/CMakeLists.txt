@@ -18,8 +18,8 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     message(FATAL_ERROR "You are on an extremely old version of GCC. Please update your compiler to at least GCC 5.4, preferably latest")
   elseif(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
     message(WARNING "Old Verison of GCC detected. Using Legacy C++ support")
-    target_link_libraries(${PROJECT_NAME} PRIVATE -lstdc++fs)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC LEGACY_CXX)
+    target_link_libraries(FlakedTuna PRIVATE -lstdc++fs)
+    target_compile_definitions(FlakedTuna PUBLIC LEGACY_CXX)
   endif()
 endif()
 
@@ -27,11 +27,11 @@ add_library(FlakedTuna::FlakedTuna ALIAS FlakedTuna)
 
 install(TARGETS FlakedTuna  EXPORT FlakedTuna RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION ${PUBLIC_INCLUDE_INSTALL_DIR})
 
-install(EXPORT FlakedTuna FILE "FlakedTuna.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}" NAMESPACE FlakedTuna::)
+install(EXPORT FlakedTuna FILE "FlakedTuna.cmake" DESTINATION "lib/cmake/${CMAKE_PROJECT_NAME}" NAMESPACE FlakedTuna::)
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
 
-configure_package_config_file("${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" INSTALL_DESTINATION "lib/cmake/${PROJECT_NAME}" PATH_VARS PUBLIC_INCLUDE_INSTALL_DIR)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" "${CMAKE_SOURCE_DIR}/cmake/CreatePlugins.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}")
+configure_package_config_file("${CMAKE_SOURCE_DIR}/cmake/${CMAKE_PROJECT_NAME}Config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake" INSTALL_DESTINATION "lib/cmake/${CMAKE_PROJECT_NAME}" PATH_VARS PUBLIC_INCLUDE_INSTALL_DIR)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake" "${CMAKE_SOURCE_DIR}/cmake/CreatePlugins.cmake" DESTINATION "lib/cmake/${CMAKE_PROJECT_NAME}")
 
 
