@@ -26,6 +26,9 @@ jobs:
     - name: 🚀 Checkout
       uses: actions/checkout@v2.3.2
 
+    - name: Set up MinGW
+      uses: egor-tensin/setup-mingw@v2
+
     - name: ➕ Install cmake
       uses: jwlawson/actions-setup-cmake@v1.5
       with:
