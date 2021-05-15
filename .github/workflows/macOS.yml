@@ -123,7 +123,7 @@ jobs:
       run: cmake -E tar cJfv ../${{ matrix.config.artifact }} .
 
     - name: 🚀 Upload
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.config.artifact }}
         path: ./
@@ -148,7 +148,7 @@ jobs:
     - name: 🔗 Store Release url
       run: |
         echo "${{ steps.create_release.outputs.upload_url }}" > ./upload_url
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v2
       with:
         path: ./upload_url
         name: upload_url
