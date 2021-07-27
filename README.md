@@ -2,16 +2,28 @@
 
 A lightweight, cross-platform C++17 Plugin Framework.
 
-## Builds ##
-|                   | Linux clang       | Linux gcc         | macOS clang       | Windows MSVC      | Windows MinGW     |
-|:-----------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|
-|Github             |![1]               |![2]               |![3]               |![4]               |![5]               |
+[LC]: https://github.com/flagarde/FlakedTuna/actions/workflows/Linux-Clang.yml
+[LCB]: https://github.com/flagarde/FlakedTuna/actions/workflows/Linux-Clang.yml/badge.svg
 
-[1]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/Linux%20Clang
-[2]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/Linux%20GCC
-[3]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/macOS
-[4]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/Windows%20MSVC
-[5]: https://img.shields.io/github/workflow/status/flagarde/FlakedTuna/Windows%20MinGW
+[LG]: https://github.com/flagarde/FlakedTuna/actions/workflows/Linux-GCC.yml
+[LGB]: https://github.com/flagarde/FlakedTuna/actions/workflows/Linux-GCC.yml/badge.svg
+
+[MC]: https://github.com/flagarde/FlakedTuna/actions/workflows/MacOS-Clang.yml
+[MCB]: https://github.com/flagarde/FlakedTuna/actions/workflows/MacOS-Clang.yml/badge.svg
+
+[MG]: https://github.com/flagarde/FlakedTuna/actions/workflows/MacOS-GCC.yml
+[MGB]: https://github.com/flagarde/FlakedTuna/actions/workflows/MacOS-GCC.yml/badge.svg
+
+[MS]: https://github.com/flagarde/FlakedTuna/actions/workflows/Windows-MSYS2.yml
+[MSB]: https://github.com/flagarde/FlakedTuna/actions/workflows/Windows-MSYS2.yml/badge.svg
+
+[MM]: https://github.com/flagarde/FlakedTuna/actions/workflows/Windows-MSVC.yml
+[MMB]: https://github.com/flagarde/FlakedTuna/actions/workflows/Windows-MSVC.yml/badge.svg
+
+## Builds
+|        | Linux Clang | Linux GCC | MacOS Clang | MacOS GCC | Windows M2sys | Windows MSVC |
+|--------|-------------|-----------|-------------|-----------|---------------|--------------|
+| Github |[![Linux Clang][LCB]][LC]|[![Linux GCC][LGB]][LG]|[![MacOS Clang][MCB]][MC]|[![MacOS GCC][MGB]][MG]|[![Windows MSYS2][MSB]][MS]|[![Windows MSVC][MMB]][MM]|
 
 ## Where does one get Flaked Tuna? ##
 Flaked Tuna is free and open source software distributed under the MIT software license.  Currently it is located on GitHub and presumably you already know the link if you are reading this document.  If not, you can download it at: github.com/ralck/flakedTuna
