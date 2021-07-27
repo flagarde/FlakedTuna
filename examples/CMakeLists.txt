@@ -1,10 +1,10 @@
-add_plugin(TARGET DogDescription SOURCES "Dog.cpp" PUBLIC_HEADERS "./Dog.hpp" CHILDS Dog BASE Animal)
+add_plugin(TARGET DogDescription SOURCES "Dog.cpp" PUBLIC_HEADERS "./Dog.hpp" CHILDREN Dog BASE Animal)
 install(TARGETS DogDescription RUNTIME DESTINATION bin LIBRARY DESTINATION bin ARCHIVE DESTINATION bin PUBLIC_HEADER DESTINATION include)
 
-add_plugin(TARGET CatDescription SOURCES "Cat.cpp" PUBLIC_HEADERS "./Cat.hpp" CHILDS Cat BASE Animal)
+add_plugin(TARGET CatDescription SOURCES "Cat.cpp" PUBLIC_HEADERS "./Cat.hpp" CHILDREN Cat BASE Animal)
 install(TARGETS CatDescription RUNTIME DESTINATION bin LIBRARY DESTINATION bin ARCHIVE DESTINATION bin PUBLIC_HEADER DESTINATION include)
 
-add_plugin(TARGET FarmAnimalsDescriptions SOURCES "FarmAnimals.cpp" PUBLIC_HEADERS "./FarmAnimals.hpp" CHILDS Chicken Cow Duck BASE Animal)
+add_plugin(TARGET FarmAnimalsDescriptions SOURCES "FarmAnimals.cpp" PUBLIC_HEADERS "./FarmAnimals.hpp" CHILDREN Chicken Cow Duck BASE Animal)
 install(TARGETS FarmAnimalsDescriptions RUNTIME DESTINATION bin LIBRARY DESTINATION bin ARCHIVE DESTINATION bin PUBLIC_HEADER DESTINATION include)
 
 add_executable(Example Example.cpp)
