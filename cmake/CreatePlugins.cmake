@@ -1,12 +1,12 @@
 function(add_plugin)
-  cmake_parse_arguments(PLUGIN "EXCLUDE_FROM_ALL" "TARGET;VERSION;BASE" "CHILDS;SOURCES;PUBLIC_HEADERS" ${ARGN})
+  cmake_parse_arguments(PLUGIN "EXCLUDE_FROM_ALL" "TARGET;VERSION;BASE" "CHILDREN;SOURCES;PUBLIC_HEADERS" ${ARGN})
 
   if(NOT PLUGIN_TARGET)
     message(FATAL_ERROR "The target name for the plugin to create must be given.")
   endif()
 
-  if(NOT PLUGIN_CHILDS)
-    message(FATAL_ERROR "The name of the child(s) class must be given.")
+  if(NOT PLUGIN_CHILDREN)
+    message(FATAL_ERROR "The name of the child/children class must be given.")
   endif()
 
   if(NOT PLUGIN_BASE)
@@ -50,11 +50,11 @@ function(add_plugin)
 
   # REGISTERS
   set(PLUGIN_REGISTERS "")
-  foreach(CHILD ${PLUGIN_CHILDS})
+  foreach(CHILDREN ${PLUGIN_CHILDREN})
     list(
       APPEND
       PLUGIN_REGISTERS
-      "static_assert(std::is_base_of<${PLUGIN_BASE},${CHILD}>::value, \"ERROR: FLAKED_TUNA_PLUGIN: Registered ${CHILD} must be of base type ${PLUGIN_BASE}.\");\nstatic_assert((std::is_default_constructible<${CHILD}>::value), \"ERROR: FLAKED_TUNA_PLUGIN: ${CHILD} type is not default constructable.\");\npr->RegisterPlugin<${CHILD},${PLUGIN_BASE}>()"
+      "static_assert(std::is_base_of<${PLUGIN_BASE},${CHILDREN}>::value, \"ERROR: FLAKED_TUNA_PLUGIN: Registered ${CHILDREN} must be of base type ${PLUGIN_BASE}.\");\nstatic_assert((std::is_default_constructible<${CHILDREN}>::value), \"ERROR: FLAKED_TUNA_PLUGIN: ${CHILDREN} type is not default constructable.\");\npr->RegisterPlugin<${CHILDREN},${PLUGIN_BASE}>()"
       )
   endforeach()
   string(REPLACE ";" "\;\n" PLUGIN_REGISTERS "${PLUGIN_REGISTERS}")
