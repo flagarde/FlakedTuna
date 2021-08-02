@@ -28,13 +28,13 @@ jobs:
       uses: jwlawson/actions-setup-cmake@v1.9
       with:
         cmake-version: '${{env.CMAKE_VERSION}}'
-        
+
     - name: Install elog
       run: sudo apt-get install elog
 
     - name: Run elogd
       run: sudo elogd -p 4444 -x -D
-      
+
     - name: Configure
       env:
         CC: ${{ matrix.compiler-version[0] }}
