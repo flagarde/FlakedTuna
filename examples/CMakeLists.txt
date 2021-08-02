@@ -10,4 +10,3 @@ install(TARGETS FarmAnimalsDescriptions RUNTIME DESTINATION bin LIBRARY DESTINAT
 add_executable(Example Example.cpp)
 target_link_libraries(Example PRIVATE FlakedTuna::FlakedTuna)
 install(TARGETS Example RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
-
