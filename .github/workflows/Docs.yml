@@ -23,7 +23,7 @@ jobs:
         && pip3 install sphinx-sitemap
 
     - name: Checkout
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2.3.5
 
     - name: Install cmake
       uses: jwlawson/actions-setup-cmake@v1.10
