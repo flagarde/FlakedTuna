@@ -20,7 +20,7 @@ jobs:
       uses: actions/checkout@v4.1.1
 
     - name: Setup CMake
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v1.14
       with:
         cmake-version: '${{env.CMAKE_VERSION}}'
 
