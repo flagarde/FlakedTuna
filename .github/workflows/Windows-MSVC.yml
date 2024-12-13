@@ -17,7 +17,7 @@ jobs:
     steps:
 
     - name: Setup Visual Studio
-      uses: ilammy/msvc-dev-cmd@v1.12.1
+      uses: ilammy/msvc-dev-cmd@v1.13.0
 
     - name: Setup CMake
       uses: jwlawson/actions-setup-cmake@v1.14
