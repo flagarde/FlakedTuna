@@ -17,7 +17,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
 
     - name: Setup CMake
       uses: jwlawson/actions-setup-cmake@v2.0
