@@ -1,3 +1,4 @@
+# CMake function to create plugins for FlakedTuna.
 function(add_plugin)
   cmake_parse_arguments(PLUGIN "EXCLUDE_FROM_ALL" "TARGET;VERSION;BASE" "CHILDREN;SOURCES;PUBLIC_HEADERS" ${ARGN})
 
@@ -54,33 +55,34 @@ function(add_plugin)
     list(
       APPEND
       PLUGIN_REGISTERS
-      "static_assert(std::is_base_of<${PLUGIN_BASE},${CHILDREN}>::value, \"ERROR: FLAKED_TUNA_PLUGIN: Registered ${CHILDREN} must be of base type ${PLUGIN_BASE}.\");\nstatic_assert((std::is_default_constructible<${CHILDREN}>::value), \"ERROR: FLAKED_TUNA_PLUGIN: ${CHILDREN} type is not default constructable.\");\npr->RegisterPlugin<${CHILDREN},${PLUGIN_BASE}>()"
-      )
+      "static_assert(std::is_base_of<${PLUGIN_BASE},${CHILDREN}>::value, \"ERROR: FLAKED_TUNA_PLUGIN: Registered ${CHILDREN} must be of base type ${PLUGIN_BASE}.\");\n
+      static_assert((std::is_default_constructible<${CHILDREN}>::value), \"ERROR: FLAKED_TUNA_PLUGIN: ${CHILDREN} type is not default constructable.\");\n
+      pr->RegisterPlugin<${CHILDREN},${PLUGIN_BASE}>()")
   endforeach()
   string(REPLACE ";" "\;\n" PLUGIN_REGISTERS "${PLUGIN_REGISTERS}")
   list(APPEND PLUGIN_REGISTERS "\;")
 
   string(CONFIGURE
   "#include \"PluginRegistry.hpp\"
-   @PLUGIN_INCLUDES@
-   FlakedTuna::PluginRegistry* pr{nullptr}\;
-   extern \"C\" @PLUGIN_EXPORT@ FlakedTuna::PluginRegistry* GetPluginRegistry()
-   {
-     pr = new FlakedTuna::PluginRegistry()\;
-     @PLUGIN_REGISTERS@
-     return pr\;
-   }
-   \n
-   extern \"C\" @PLUGIN_EXPORT@ void ClosePluginRegistry()\n
-   {
-   if(pr != nullptr) { delete pr\; }
-   }
-   \n
-   extern \"C\" @PLUGIN_EXPORT@ const int GetPluginVersion()
-   {
-   return @PLUGIN_VERSION@\;
-   }"
-   FILE_CONTENT @ONLY)
+  @PLUGIN_INCLUDES@
+  FlakedTuna::PluginRegistry* pr{nullptr}\;
+  extern \"C\" @PLUGIN_EXPORT@ FlakedTuna::PluginRegistry* GetPluginRegistry()
+  {
+    pr = new FlakedTuna::PluginRegistry()\;
+    @PLUGIN_REGISTERS@
+    return pr\;
+  }
+  \n
+  extern \"C\" @PLUGIN_EXPORT@ void ClosePluginRegistry()\n
+  {
+  if(pr != nullptr) { delete pr\; }
+  }
+  \n
+  extern \"C\" @PLUGIN_EXPORT@ const int GetPluginVersion()
+  {
+  return @PLUGIN_VERSION@\;
+  }"
+  FILE_CONTENT @ONLY)
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/generated/plugins/Plugin_${PLUGIN_TARGET}.cpp"  ${FILE_CONTENT})
   target_sources(${PLUGIN_TARGET} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated/plugins/Plugin_${PLUGIN_TARGET}.cpp")
 endfunction()

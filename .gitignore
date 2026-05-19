@@ -42,3 +42,5 @@ _deps
 *.exe
 *.out
 *.app
+
+[Bb]uild

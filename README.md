@@ -43,31 +43,30 @@ Okay, so it is not really a magical bridge in between.  In reality, it is C styl
 
 ## How does one use it? ##
 Aha, here is the part of this guide you have been waiting for!  Usage is broken down into a couple easy steps:
- 1.	Build the library.  This is pretty simple; add the source files to your favorite IDE or make file system. If you are on Windows, make sure you have the WIN32 preprocessor flag defined.  Build it into a static library (.lib on Windows or usually .a on Linux).
- 2.	Include the necessary header files in your plugin code.  As far as Flaked Tuna, all you need is PluginRegistry.h.  Typically, you also need to include your plugin's base class, depending on how you have set up your plugin, but I will leave that implementation up to you.
- 3.	Set up the plugin macros to register your plugin.  These are:
-	FLAKED_TUNA_EXPORTS_BEGIN			// Begins the plugin registration
-	FLAKED_TUNA_PLUGIN( concrete, base )	// Registers each plugin per base type
-	FLAKED_TUNA_EXPORTS_END			// Ends the plugin registration
-   There is also an optional macro for setting up the plugin version.
-	FLAKED_TUNA_PLUGIN_VERSION( version )
- 4.	Set your compiler to compile the plugin as a shared library.  On Windows this is a .dll; on Linux it is usually a .so.
+  1. Build the library. This is pretty simple; add the source files to your favorite IDE or make file system. If you are on Windows, make sure you have the WIN32 preprocessor flag defined. Build it into a static library (.lib on Windows or usually .a on Linux).
+  2. Include the necessary header files in your plugin code. As far as Flaked Tuna, all you need is PluginRegistry.h. Typically, you also need to include your plugin's base class, depending on how you have set up your plugin, but I will leave that implementation up to you.
+  3. Set up the plugin macros to register your plugin. These are:
+    - FLAKED_TUNA_EXPORTS_BEGIN              // Begins the plugin registration
+    - FLAKED_TUNA_PLUGIN( concrete, base )   // Registers each plugin per base type
+    - FLAKED_TUNA_EXPORTS_END                // Ends the plugin registration
+  There is also an optional macro for setting up the plugin version. FLAKED_TUNA_PLUGIN_VERSION( version )
+  4. Set your compiler to compile the plugin as a shared library. On Windows this is a .dll; on Linux it is usually a .so.
 Note: The default extension (.dll or .so) is not required for the Flaked Tuna framework, so use what ever tickles your fancy!
- 5.	Include the necessary header files in your application code.  For Flaked Tuna, this is just PluginLoader.h.  Again, I will leave the other implementation details up to you.
- 6.	Set up your linker so that your application code links to FlakedTuna.lib (built in Step 1).
- 7.	In your application code, create an instance of a PluginLoader object, add search directories, and load in plugins.
+  5. Include the necessary header files in your application code. For Flaked Tuna, this is just PluginLoader.h. Again, I will leave the other implementation details up to you.
+  6. Set up your linker so that your application code links to FlakedTuna.lib (built in Step 1).
+  7. In your application code, create an instance of a PluginLoader object, add search directories, and load in plugins.
 
- ```cpp
-	FlakedTuna::PluginLoader loader;
-	loader.FindPluginsAtDirectory("Path\\To\\Plugin", "dll"); // Windows
-	loader.FindPluginsAtDirectory("Path/To/Plugin", "so");    // Linux
-	std::vector<std::shared_ptr<IPlugin>> plugins = loader.BuildAndResolvePlugin<IPlugin>();
- ```
- 8.	Build your plugin and your application.  That is it!  You are now using the Flaked Tuna plugin framework. ☺
+  ```cpp
+  FlakedTuna::PluginLoader loader;
+  loader.FindPluginsAtDirectory("Path\\To\\Plugin", "dll"); // Windows
+  loader.FindPluginsAtDirectory("Path/To/Plugin", "so");    // Linux
+  std::vector<std::shared_ptr<IPlugin>> plugins = loader.BuildAndResolvePlugin<IPlugin>();
+  ```
+  8. Build your plugin and your application. That is it! You are now using the Flaked Tuna plugin framework. ☺
 
 There is also some example code already set up (with Visual Studio solution/project files) that you can examine or try out the pre-compiled versions.  You can find this in the example directory on github.  The example has been updated to compile on Linux, but no make file is included yet.
 
 ## Important Notes : ##
-First and foremost, the PluginLoader must remain in memory while your plugins are active.  As shown above, it creates the bridge to your plugin code.  If it is garbage collected while you are still using your plugins, the bridge collapses, all boat traffic is stuck in the harbor, and bad things may happen (i.e. segfault).  TL;DR: Don't delete or let the system garbage collect your PluginLoader while you are using your plugins.
+First and foremost, the PluginLoader must remain in memory while your plugins are active. As shown above, it creates the bridge to your plugin code.  If it is garbage collected while you are still using your plugins, the bridge collapses, all boat traffic is stuck in the harbor, and bad things may happen (i.e. segfault).  TL;DR: Don't delete or let the system garbage collect your PluginLoader while you are using your plugins.
 
-Secondly, a sometimes overlooked feature of C++ is object instantiation and destruction.  Objects are created in the order they are listed and destructed in the reverse order.  Order of members is important.  The PluginLoader should not be destructed before the objects holding your plugins are.  TL;DR: Put the PluginLoader ahead of your plugin objects so it is destructed last.
+Secondly, a sometimes overlooked feature of C++ is object instantiation and destruction. Objects are created in the order they are listed and destructed in the reverse order.  Order of members is important. The PluginLoader should not be destructed before the objects holding your plugins are.  TL;DR: Put the PluginLoader ahead of your plugin objects so it is destructed last.

@@ -9,41 +9,41 @@
 
 namespace FlakedTuna
 {
-  class PluginLoader
+class PluginLoader
+{
+private:
+  std::vector<PLUG_HANDLE> _libraries;
+  registryVector           _registries;
+
+  void ClosePluginLibraries();
+
+  static const std::string m_DefaultExtension;
+
+public:
+  ~PluginLoader();
+
+  bool FindPluginsAtDirectory( const n_fs::path& path = ".", const std::string& extension = PluginLoader::m_DefaultExtension );
+
+  template<class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin( const int& version = 0 )
   {
-  private:
-    std::vector<PLUG_HANDLE> _libraries;
-    registryVector           _registries;
+    std::vector<std::shared_ptr<BaseT>> concretePlugins;
 
-    void ClosePluginLibraries();
-
-    static const std::string m_DefaultExtension;
-  public:
-
-    ~PluginLoader();
-
-    bool FindPluginsAtDirectory(const n_fs::path& path=".",const std::string& extension = PluginLoader::m_DefaultExtension);
-
-    template<class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin(const int& version = 0)
+    for( auto registryIter: _registries )
     {
-      std::vector<std::shared_ptr<BaseT>> concretePlugins;
+      if( registryIter.first < version ) continue;  // Earlier versions may not be forward compatible, so ignore
 
-      for(auto registryIter: _registries)
+      std::vector<std::shared_ptr<BaseT>> concretePlugin = registryIter.second->ResolvePlugin<BaseT>();
+      for( size_t i = 0; i != concretePlugin.size(); ++i )
       {
-        if(registryIter.first < version) continue;  // Earlier versions may not be forward compatible, so ignore
-
-        std::vector<std::shared_ptr<BaseT>> concretePlugin = registryIter.second->ResolvePlugin<BaseT>();
-        for(size_t i = 0; i != concretePlugin.size(); ++i)
+        if( concretePlugin[i].get() != nullptr )
         {
-          if(concretePlugin[i].get() != nullptr)
-          {
-            // It has this base type registered
-            concretePlugins.push_back(concretePlugin[i]);
-          }
+          // It has this base type registered
+          concretePlugins.push_back( concretePlugin[i] );
         }
       }
-
-      return concretePlugins;
     }
-  };
+
+    return concretePlugins;
+  }
+};
 }  // namespace FlakedTuna

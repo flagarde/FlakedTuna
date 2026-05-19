@@ -1,0 +1,5 @@
+[codespell]
+ignore-words = .codespellignore
+check-filenames =
+check-hidden =
+skip = ./.git,.gitignore
