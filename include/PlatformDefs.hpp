@@ -4,14 +4,7 @@
 
 #include <string>
 #include <vector>
-
-#ifdef LEGACY_CXX
-  #include <experimental/filesystem>
-namespace n_fs = ::std::experimental::filesystem;
-#else
-  #include <filesystem>
-namespace n_fs = ::std::filesystem;
-#endif
+#include <filesystem>
 
 namespace FlakedTuna
 {
@@ -33,7 +26,7 @@ using VersionFuncPtr = int ( * )();
    *******************************************************/
 using registryVector = std::vector<std::pair<int, PluginRegistry*>>;
 
-std::pair<std::vector<PLUG_HANDLE>, registryVector> GetPluginHandles( const n_fs::path& path, const std::string& extension );
+std::pair<std::vector<PLUG_HANDLE>, registryVector> GetPluginHandles( const std::filesystem::path& path, const std::string& extension );
 void                                                ClosePluginHandles( std::vector<PLUG_HANDLE> handles );
 
 }  // namespace FlakedTuna

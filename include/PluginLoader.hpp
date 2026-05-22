@@ -22,7 +22,7 @@ private:
 public:
   ~PluginLoader();
 
-  bool FindPluginsAtDirectory( const n_fs::path& path = ".", const std::string& extension = PluginLoader::m_DefaultExtension );
+  bool FindPluginsAtDirectory( const std::filesystem::path& path = ".", const std::string& extension = PluginLoader::m_DefaultExtension );
 
   template<class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin( const int& version = 0 )
   {

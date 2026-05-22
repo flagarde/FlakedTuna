@@ -4,7 +4,7 @@
 
 namespace FlakedTuna
 {
-std::pair<std::vector<PLUG_HANDLE>, registryVector> GetPluginHandles( const n_fs::path& path, const std::string& extension )
+std::pair<std::vector<PLUG_HANDLE>, registryVector> GetPluginHandles( const std::filesystem::path& path, const std::string& extension )
 {
   std::vector<PLUG_HANDLE> plugHandles;
   registryVector           regPointers;
@@ -13,7 +13,7 @@ std::pair<std::vector<PLUG_HANDLE>, registryVector> GetPluginHandles( const n_fs
   if( pextension.find_last_of( "." ) == std::string::npos ) { pextension.insert( 0, "." ); }
 
   // Iterate over the elements inside the directory
-  for( auto& p: n_fs::recursive_directory_iterator( path ) )
+  for( auto& p: std::filesystem::recursive_directory_iterator( path ) )
   {
     if( p.path().extension() == pextension )
     {

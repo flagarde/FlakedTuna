@@ -22,7 +22,7 @@ void PluginLoader::ClosePluginLibraries()
 
 // Return: true  - Success
 //         false - Invalid directory path
-bool PluginLoader::FindPluginsAtDirectory( const n_fs::path& path, const std::string& extension )
+bool PluginLoader::FindPluginsAtDirectory( const std::filesystem::path& path, const std::string& extension )
 {
   std::vector<PLUG_HANDLE> newLibs;
   registryVector           newRegs;
