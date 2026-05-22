@@ -5,13 +5,17 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <utility>
+#if defined( _WIN32 ) || defined( WIN32 )
+  #define WIN32_LEAN_AND_MEAN
+  #include <Windows.h>
+#endif
+
 
 namespace FlakedTuna
 {
 
 #if defined( _WIN32 ) || defined( WIN32 )
-  #define WIN32_LEAN_AND_MEAN
-  #include <Windows.h>
 using PLUG_HANDLE = HMODULE;
 #else
 using PLUG_HANDLE = void*;

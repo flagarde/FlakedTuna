@@ -1,6 +1,10 @@
 #include "PlatformDefs.hpp"
 
 #include <dlfcn.h>
+#include <utility>
+#include <vector>
+#include <filesystem>
+
 
 namespace FlakedTuna
 {

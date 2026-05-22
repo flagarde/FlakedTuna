@@ -1,4 +1,7 @@
 #include "PlatformDefs.hpp"
+#include <utility>
+#include <vector>
+#include <filesystem>
 
 namespace FlakedTuna
 {

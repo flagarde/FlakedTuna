@@ -1,6 +1,8 @@
 #include "PluginLoader.hpp"
 
 #include <tuple>
+#include <string>
+#include <filesystem>
 
 namespace FlakedTuna
 {
