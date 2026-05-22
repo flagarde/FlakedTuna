@@ -13,15 +13,6 @@ target_include_directories(FlakedTuna PUBLIC $<BUILD_INTERFACE:${INCLUDES}> PUBL
 set_target_properties(FlakedTuna PROPERTIES PUBLIC_HEADER "${INCLUDES}/PluginLoader.hpp;${INCLUDES}/PluginRegistry.hpp;${INCLUDES}/PlatformDefs.hpp")
 target_link_libraries(FlakedTuna INTERFACE ${CMAKE_DL_LIBS})
 set_property(TARGET FlakedTuna PROPERTY POSITION_INDEPENDENT_CODE ON)
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.4)
-    message(FATAL_ERROR "You are on an extremely old version of GCC. Please update your compiler to at least GCC 5.4, preferably latest")
-  elseif(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
-    message(WARNING "Old Version of GCC detected. Using Legacy C++ support")
-    target_link_libraries(FlakedTuna PRIVATE -lstdc++fs)
-    target_compile_definitions(FlakedTuna PUBLIC LEGACY_CXX)
-  endif()
-endif()
 
 add_library(FlakedTuna::FlakedTuna ALIAS FlakedTuna)
 
