@@ -1,4 +1,4 @@
-#include "PluginLoader.hpp"
+#include "flakedthuna/PluginLoader.hpp"
 
 #include <tuple>
 #include <string>

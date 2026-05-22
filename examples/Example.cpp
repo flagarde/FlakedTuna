@@ -1,5 +1,5 @@
 #include "Animal.hpp"
-#include "PluginLoader.hpp"
+#include "flakedthuna/PluginLoader.hpp"
 
 #include <iostream>
 

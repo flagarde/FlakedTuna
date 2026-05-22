@@ -63,7 +63,7 @@ function(add_plugin)
   list(APPEND PLUGIN_REGISTERS "\;")
 
   string(CONFIGURE
-  "#include \"PluginRegistry.hpp\"
+  "#include \"flakedthuna/PluginRegistry.hpp\"
   @PLUGIN_INCLUDES@
   FlakedTuna::PluginRegistry* pr{nullptr}\;
   extern \"C\" @PLUGIN_EXPORT@ FlakedTuna::PluginRegistry* GetPluginRegistry()
