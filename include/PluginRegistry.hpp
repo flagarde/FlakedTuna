@@ -5,6 +5,8 @@
 #include <map>
 #include <memory>
 #include <typeindex>
+#include <vector>
+#include <utility>
 
 // TODO: Look at supporting constructors with parameters
 
