@@ -9,8 +9,10 @@ else()
 endif()
 target_include_directories(FlakedTuna PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 set_target_properties(FlakedTuna PROPERTIES PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/include/PluginLoader.hpp;${PROJECT_SOURCE_DIR}/include/PluginRegistry.hpp;${PROJECT_SOURCE_DIR}/include/PlatformDefs.hpp")
-target_link_libraries(FlakedTuna INTERFACE ${CMAKE_DL_LIBS})
+target_link_libraries(FlakedTuna PRIVATE ${CMAKE_DL_LIBS})
 set_property(TARGET FlakedTuna PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_compile_features(FlakedTuna PUBLIC cxx_std_17)
+
 
 add_library(FlakedTuna::FlakedTuna ALIAS FlakedTuna)
 
